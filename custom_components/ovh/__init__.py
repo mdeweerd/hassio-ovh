@@ -1,20 +1,15 @@
 """Integrate with OVH Dynamic DNS service."""
 import asyncio
-from datetime import timedelta
 import logging
+from datetime import timedelta
 
 import aiohttp
 import async_timeout
-import voluptuous as vol
-
-from homeassistant.const import (
-    CONF_DOMAIN,
-    CONF_PASSWORD,
-    CONF_USERNAME,
-    CONF_SCAN_INTERVAL
-)
-from homeassistant.core import HomeAssistant
 import homeassistant.helpers.config_validation as cv
+import voluptuous as vol
+from homeassistant.const import (CONF_DOMAIN, CONF_PASSWORD,
+                                 CONF_SCAN_INTERVAL, CONF_USERNAME)
+from homeassistant.core import HomeAssistant
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.event import async_track_time_interval
 from homeassistant.helpers.typing import ConfigType
@@ -43,9 +38,9 @@ CONFIG_SCHEMA = vol.Schema(
                 vol.Required(CONF_DOMAIN): cv.string,
                 vol.Required(CONF_USERNAME): cv.string,
                 vol.Required(CONF_PASSWORD): cv.string,
-                vol.Optional(CONF_SCAN_INTERVAL, default=DEFAULT_INTERVAL): vol.All(
-                    cv.time_period, cv.positive_timedelta
-                ),
+                vol.Optional(
+                    CONF_SCAN_INTERVAL, default=DEFAULT_INTERVAL
+                ): vol.All(cv.time_period, cv.positive_timedelta),
             }
         )
     },
@@ -80,7 +75,9 @@ async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
 async def _update_ovh(session, domain, user, password):
     """Update OVH."""
     try:
-        url = f"https://{user}:{password}@{HOST}?system=dyndns&hostname={domain}"
+        url = (
+            f"https://{user}:{password}@{HOST}?system=dyndns&hostname={domain}"
+        )
         async with async_timeout.timeout(TIMEOUT):
             resp = await session.get(url)
             body = await resp.text()
@@ -90,7 +87,11 @@ async def _update_ovh(session, domain, user, password):
 
                 return True
 
-            _LOGGER.warning("Updating OVH failed: %s => %s", domain, OVH_ERRORS[body.strip()])
+            _LOGGER.warning(
+                "Updating OVH failed: %s => %s",
+                domain,
+                OVH_ERRORS[body.strip()],
+            )
 
     except aiohttp.ClientError:
         _LOGGER.warning("Can't connect to OVH API")
