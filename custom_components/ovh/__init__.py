@@ -27,7 +27,8 @@ OVH_ERRORS = {
     "nohost": "Hostname supplied does not exist under specified account",
     "badauth": "Invalid username password combination",
     "badagent": "Client disabled",
-    "!donator": "An update request was sent with a feature that is not available",
+    "!donator": "An update request was sent with"
+    " a feature that is not available",
     "abuse": "Username is blocked due to abuse",
 }
 
